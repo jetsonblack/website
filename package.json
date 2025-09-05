@@ -8,8 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist -b gh-pages", 
-    "predeploy": "npm run build && echo jetsonblack.com > dist/CNAME && echo > dist/.nojekyll && cp dist/index.html dist/404.html"
+    "deploy": "gh-pages -d dist -b gh-pages"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
