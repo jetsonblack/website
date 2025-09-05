@@ -149,15 +149,14 @@ body { margin: 0; background: transparent; }
   filter: none !important;/* ensure no inherited blur */
 }
 
-/* Hollow green ring (transparent middle) */
 .cursor-ring {
   position: absolute;
   top: 0; left: 0;
-  width: 20px;            /* ring diameter */
+  width: 20px;            
   height: 20px;
   border-radius: 50%;
-  border: 2px solid offwhite;         /* green outline */
-  background: transparent;           /* hollow */
-  box-shadow: 0 0 6px white; /* soft glow */
+  border: 2px solid offwhite;         
+  background: transparent;           
+  box-shadow: 0 0 6px white; 
 }
 

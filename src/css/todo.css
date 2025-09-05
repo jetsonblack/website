@@ -1,3 +1,13 @@
+/* <!-- 
+___________________________________________________________________________
+
+                            copyright © 2024 Jetson Black
+                            x.com/jetsonbb
+                            http://jetsonblack.com/
+
+                            just a simple page for myself!
+___________________________________________________________________________
+--> */
 /* === TODO card === */
 .todo-card{
   width: min(800px, 92vw);
@@ -21,7 +31,6 @@
   opacity: .9;
 }
 
-/* === List === */
 .todo-list{
   list-style: none;
   margin: 0;
@@ -39,7 +48,6 @@
   transition: transform .16s ease, box-shadow .16s ease, background .2s ease;
 }
 
-/* left accent bar */
 .todo-list > li::before{
   content: "";
   position: absolute;
@@ -51,14 +59,12 @@
   box-shadow: 0 0 18px rgba(255,255,255,0.35);
 }
 
-/* subtle hover lift */
 .todo-list > li:hover{
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0,0,0,0.28);
   background: rgba(255,255,255,0.07);
 }
 
-/* Links inside items */
 .todo-list a{
   color: #e8f3ff;
   text-decoration: underline;
@@ -66,7 +72,6 @@
 }
 .todo-list a:hover{ opacity: .9; }
 
-/* Code tags inside items */
 .todo-list code{
   padding: .1rem .35rem;
   border-radius: 6px;
@@ -74,7 +79,6 @@
   border: 1px solid rgba(255,255,255,0.12);
 }
 
-/* Nested list */
 .todo-list ul{
   list-style: none;
   margin: .5rem 0 0 0;
@@ -98,14 +102,12 @@
   opacity: .8;
 }
 
-/* Responsive tweaks */
 @media (max-width: 700px){
   .todo-card{ padding: 1rem; }
   .todo-title{ font-size: .95rem; }
   .todo-list > li{ padding-left: 2.1rem; }
 }
 
-/* Optional state helpers (add these classes in JSX when needed) */
 .todo-done{
   text-decoration: line-through;
   opacity: .65;
@@ -115,7 +117,6 @@
   background: rgba(255,255,255,0.09) !important;
 }
 
-/* nicer checkbox look (keeps your theme) */
 .todo-list input[type="checkbox"]{
   accent-color: #fff;
 }

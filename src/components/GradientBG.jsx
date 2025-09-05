@@ -1,3 +1,13 @@
+// <!-- 
+// ___________________________________________________________________________
+
+//                             copyright © 2024 Jetson Black
+//                             x.com/jetsonbb
+//                             http://jetsonblack.com/
+
+//                             just a simple page for myself!
+// ___________________________________________________________________________
+// -->
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 
 const LS_KEY = "bgMode";     // "mono" | "vibrant"

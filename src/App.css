@@ -1,3 +1,13 @@
+/* <!-- 
+___________________________________________________________________________
+
+                            copyright © 2024 Jetson Black
+                            x.com/jetsonbb
+                            http://jetsonblack.com/
+
+                            just a simple page for myself!
+___________________________________________________________________________
+--> */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -8,10 +18,10 @@
 body {
   margin: 0;
   padding: 0;
-  overflow-y: scroll; /* keeps scrolling */
-  scrollbar-width: none; /* Firefox */
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none;
 }

@@ -1,3 +1,13 @@
+// <!-- 
+// ___________________________________________________________________________
+
+//                             copyright © 2024 Jetson Black
+//                             x.com/jetsonbb
+//                             http://jetsonblack.com/
+
+//                             just a simple page for myself!
+// ___________________________________________________________________________
+// -->
 import { useEffect, useMemo, useState, useCallback } from "react";
 
 const STORAGE_KEY = "persistent_todos_v1";

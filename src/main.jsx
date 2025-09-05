@@ -1,3 +1,13 @@
+// <!-- 
+// ___________________________________________________________________________
+
+//                             copyright © 2024 Jetson Black
+//                             x.com/jetsonbb
+//                             http://jetsonblack.com/
+
+//                             just a simple page for myself!
+// ___________________________________________________________________________
+// -->
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";

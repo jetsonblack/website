@@ -1,3 +1,13 @@
+// <!-- 
+// ___________________________________________________________________________
+
+//                             copyright © 2024 Jetson Black
+//                             x.com/jetsonbb
+//                             http://jetsonblack.com/
+
+//                             just a simple page for myself!
+// ___________________________________________________________________________
+// -->
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
