@@ -1,10 +1,10 @@
 // <!-- 
 // ___________________________________________________________________________
-
+//
 //                             copyright © 2024 Jetson Black
 //                             x.com/jetsonbb
 //                             http://jetsonblack.com/
-
+//
 //                             just a simple page for myself!
 // ___________________________________________________________________________
 // -->
@@ -20,7 +20,6 @@ function setCSSVars(vars, el = document.documentElement) {
 }
 
 /* Palettes */
-// Monochrome (low-contrast to avoid artifacts)
 function monoPalette() {
   return {
     "color-bg1": `rgb(24, 24, 26)`,
@@ -104,8 +103,8 @@ const GradientBG = forwardRef(function GradientBG(
     blobCount = 8,      // more blobs -> all blobs auto-shrink
     baseCircle = 0.8,   // baseline circle-size (80%)
     minCircle = 0.35,   // never shrink below 35%
-    haloSize = 160,     // (unused now; halo removed) kept for API compatibility
-    ringSize = 20,      // crisp green ring diameter (px)
+    haloSize = 160,     // (unused; kept for API compatibility)
+    ringSize = 20,
 
     // Per-blob inertia knobs (applied via global --inertiaY * pf)
     inertiaEnabled = true,
@@ -126,9 +125,19 @@ const GradientBG = forwardRef(function GradientBG(
   const ringRef = useRef(null);
   const stageRef = useRef(null); // holds --inertiaY
 
+  // Respect reduced motion by default; will further disable if FPS is low.
+  const [perfOK, setPerfOK] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch {
+      return true;
+    }
+  });
+
   // Mode: persisted, default 90% mono / 10% vibrant
   const [mode, setMode] = useState(() => {
-    const saved = localStorage.getItem(LS_KEY);
+    const saved = typeof localStorage !== "undefined" ? localStorage.getItem(LS_KEY) : null;
     if (saved === "mono" || saved === "vibrant") return saved;
     return Math.random() < 0.10 ? "vibrant" : "mono";
   });
@@ -142,7 +151,7 @@ const GradientBG = forwardRef(function GradientBG(
   // Apply palette + persist
   useEffect(() => {
     applyMode(mode);
-    localStorage.setItem(LS_KEY, mode);
+    try { localStorage.setItem(LS_KEY, mode); } catch {}
   }, [mode]);
 
   // Refresh vibrant every 60s to catch hour changes
@@ -152,15 +161,51 @@ const GradientBG = forwardRef(function GradientBG(
     return () => clearInterval(id);
   }, [mode]);
 
-  // 'p' toggle (testing)
+  // Shift+P toggle (testing)
   useEffect(() => {
-    const onKey = (e) => { if (e.key === "p" || e.key === "P") setMode((m) => (m === "mono" ? "vibrant" : "mono")); };
+    const onKey = (e) => {
+      if ((e.key === "p" || e.key === "P") && e.shiftKey) {
+        setMode((m) => (m === "mono" ? "vibrant" : "mono"));
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Lightweight FPS probe: if sustained < minFPS twice in a row, disable blob logic.
+  useEffect(() => {
+    if (!perfOK) return; // already disabled
+    let rafId;
+    let frames = 0;
+    let start = performance.now();
+    let badStreak = 0;
+    const sampleMs = 1500;  // window to sample FPS
+    const minFPS = 40;      // threshold for "good enough"
+    const maxBad = 2;       // consecutive bad windows before disabling
+
+    const loop = (t) => {
+      frames++;
+      const elapsed = t - start;
+      if (elapsed >= sampleMs) {
+        const fps = (frames / elapsed) * 1000;
+        if (fps < minFPS) badStreak++; else badStreak = 0;
+        if (badStreak >= maxBad) {
+          setPerfOK(false); // permanently disable until reload
+          cancelAnimationFrame(rafId);
+          return;
+        }
+        frames = 0;
+        start = t;
+      }
+      rafId = requestAnimationFrame(loop);
+    };
+    rafId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafId);
+  }, [perfOK]);
+
   // Mouse-follow: interactive (smoothed, stage-relative) + ring (fixed overlay)
   useEffect(() => {
+    if (!perfOK) return; // disable on low-FPS/reduced motion
     const inter = interactiveRef.current;
     const ring = ringRef.current;
     const stage = stageRef.current;
@@ -171,30 +216,23 @@ const GradientBG = forwardRef(function GradientBG(
 
     const onMove = (e) => {
       tgX = e.clientX; tgY = e.clientY;
-
-      // crisp green ring in fixed overlay (viewport coords)
       ring.style.transform = `translate3d(${tgX - ringHalf}px, ${tgY - ringHalf}px, 0)`;
     };
 
     const tick = () => {
-      // smooth trailing in viewport coords
       curX += (tgX - curX) / 20;
       curY += (tgY - curY) / 20;
-
-      // convert to stage-local before applying to the interactive field
       const rect = stage.getBoundingClientRect();
       const localX = curX - rect.left;
       const localY = curY - rect.top;
-
       inter.style.transform = `translate3d(${Math.round(localX)}px, ${Math.round(localY)}px, 0)`;
-
       rafId = requestAnimationFrame(tick);
     };
 
     window.addEventListener("mousemove", onMove);
     rafId = requestAnimationFrame(tick);
     return () => { window.removeEventListener("mousemove", onMove); cancelAnimationFrame(rafId); };
-  }, [ringSize]);
+  }, [ringSize, perfOK]);
 
   // Init --inertiaY ONCE (prevents reset on re-renders)
   useEffect(() => {
@@ -203,7 +241,7 @@ const GradientBG = forwardRef(function GradientBG(
 
   // Per-blob inertia with grace delay
   useEffect(() => {
-    if (!inertiaEnabled) {
+    if (!perfOK || !inertiaEnabled) {
       if (stageRef.current) stageRef.current.style.setProperty("--inertiaY", "0px");
       return;
     }
@@ -245,7 +283,15 @@ const GradientBG = forwardRef(function GradientBG(
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(rafId);
     };
-  }, [inertiaEnabled, inertiaStrength, inertiaFriction, inertiaSpring, inertiaMax, inertiaGraceMs]);
+  }, [
+    perfOK,
+    inertiaEnabled,
+    inertiaStrength,
+    inertiaFriction,
+    inertiaSpring,
+    inertiaMax,
+    inertiaGraceMs
+  ]);
 
   // Keep bleed as a CSS var for styles
   useEffect(() => {
@@ -259,7 +305,7 @@ const GradientBG = forwardRef(function GradientBG(
     <div
       className="gradient-bg"
       ref={outerRef}
-      title={`Press 'p' to toggle palette (${mode})`}
+      title={`Press Shift+P to toggle palette (${mode})`}
       style={{
         position: "fixed",
         inset: 0,
@@ -272,122 +318,128 @@ const GradientBG = forwardRef(function GradientBG(
       }}
     >
       {/* Goo filter */}
-      <svg xmlns="http://www.w3.org/2000/svg" style={{ position: "absolute", width: 0, height: 0 }}>
-        <defs>
-          <filter id="goo" colorInterpolationFilters="sRGB">
-            <feGaussianBlur in="SourceGraphic" stdDeviation={FE_STD} result="blur" />
-            <feColorMatrix
-              in="blur"
-              result="goo"
-              type="matrix"
-              values="
-                1 0 0 0 0
-                0 1 0 0 0
-                0 0 1 0 0
-                0 0 0 20 -9" />
-            <feBlend in="SourceGraphic" in2="goo" mode="normal" />
-          </filter>
-        </defs>
-      </svg>
+      {perfOK && (
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ position: "absolute", width: 0, height: 0 }}>
+          <defs>
+            <filter id="goo" colorInterpolationFilters="sRGB">
+              <feGaussianBlur in="SourceGraphic" stdDeviation={FE_STD} result="blur" />
+              <feColorMatrix
+                in="blur"
+                result="goo"
+                type="matrix"
+                values="
+                  1 0 0 0 0
+                  0 1 0 0 0
+                  0 0 1 0 0
+                  0 0 0 20 -9" />
+              <feBlend in="SourceGraphic" in2="goo" mode="normal" />
+            </filter>
+          </defs>
+        </svg>
+      )}
 
       {/* BLOBS STAGE: bigger than viewport; holds --inertiaY */}
-      <div
-        ref={stageRef}
-        className="gradients-container"
-        style={{
-          position: "absolute",
-          left: 0,
-          top: "calc(-1 * var(--bleed, 240px))",
-          width: "100%",
-          height: "calc(100vh + calc(var(--bleed, 240px) * 2))",
-          filter: `url(#goo) blur(${OUTER_BLUR_PX}px)`,
-          contain: "paint",
-          overflow: "visible",
-        }}
-      >
-        {seeds.map((s, i) => {
-          const colorVar = `var(--color${s.colorIndex + 1})`;
-          return (
-            <div
-              key={i}
-              className="blob-wrap"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                transform: `translate3d(0, calc(var(--inertiaY) * ${s.pf}), 0)`,
-                willChange: "transform",
-              }}
-            >
-              <div
-                className="blob"
-                style={{
-                  background: `radial-gradient(circle at center, rgba(${colorVar}, 0.8) 0, rgba(${colorVar}, 0) 50%) no-repeat`,
-                  animation: `${keyframeName(s.which)} ${s.dur}s ${s.ease} infinite`,
-                  transformOrigin: `calc(50% + ${s.originX}px) calc(50% + ${s.originY}px)`,
-                  top: `calc(50% - var(--circle-size) / 2 + ${s.topOff}px)`,
-                  left: `calc(50% - var(--circle-size) / 2 + ${s.leftOff}px)`,
-                  width: `var(--circle-size)`,
-                  height: `var(--circle-size)`,
-                  position: "absolute",
-                  willChange: "transform",
-                  backfaceVisibility: "hidden",
-                  mixBlendMode: "var(--blending)",
-                }}
-              />
-            </div>
-          );
-        })}
-
-        {/* interactive tint that trails the cursor (no halo) */}
+      {perfOK && (
         <div
-          className="interactive"
-          ref={interactiveRef}
+          ref={stageRef}
+          className="gradients-container"
           style={{
-            background:
-              "radial-gradient(circle at center, rgba(var(--color-interactive), 0.8) 0, rgba(var(--color-interactive), 0) 50%) no-repeat",
-            opacity: 0.7,
-            width: "100%",
-            height: "100%",
-            top: "-50%",
-            left: "-50%",
             position: "absolute",
-            willChange: "transform",
-            backfaceVisibility: "hidden",
-            mixBlendMode: "var(--blending)",
+            left: 0,
+            top: "calc(-1 * var(--bleed, 240px))",
+            width: "100%",
+            height: "calc(100vh + calc(var(--bleed, 240px) * 2))",
+            filter: `url(#goo) blur(${OUTER_BLUR_PX}px)`,
+            contain: "paint",
+            overflow: "visible",
           }}
-        />
-      </div>
+        >
+          {seeds.map((s, i) => {
+            const colorVar = `var(--color${s.colorIndex + 1})`;
+            return (
+              <div
+                key={i}
+                className="blob-wrap"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  transform: `translate3d(0, calc(var(--inertiaY) * ${s.pf}), 0)`,
+                  willChange: "transform",
+                }}
+              >
+                <div
+                  className="blob"
+                  style={{
+                    background: `radial-gradient(circle at center, rgba(${colorVar}, 0.8) 0, rgba(${colorVar}, 0) 50%) no-repeat`,
+                    animation: `${keyframeName(s.which)} ${s.dur}s ${s.ease} infinite`,
+                    transformOrigin: `calc(50% + ${s.originX}px) calc(50% + ${s.originY}px)`,
+                    top: `calc(50% - var(--circle-size) / 2 + ${s.topOff}px)`,
+                    left: `calc(50% - var(--circle-size) / 2 + ${s.leftOff}px)`,
+                    width: `var(--circle-size)`,
+                    height: `var(--circle-size)`,
+                    position: "absolute",
+                    willChange: "transform",
+                    backfaceVisibility: "hidden",
+                    mixBlendMode: "var(--blending)",
+                  }}
+                />
+              </div>
+            );
+          })}
+
+          {/* interactive tint that trails the cursor (no halo) */}
+          <div
+            className="interactive"
+            ref={interactiveRef}
+            style={{
+              background:
+                "radial-gradient(circle at center, rgba(var(--color-interactive), 0.8) 0, rgba(var(--color-interactive), 0) 50%) no-repeat",
+              opacity: 0.7,
+              width: "100%",
+              height: "100%",
+              top: "-50%",
+              left: "-50%",
+              position: "absolute",
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+              mixBlendMode: "var(--blending)",
+            }}
+          />
+        </div>
+      )}
 
       {/* CRISP overlay above the blur for the green ring */}
-      <div
-        className="cursor-overlay"
-        style={{
-          position: "fixed",
-          inset: 0,
-          pointerEvents: "none",
-          zIndex: 10,
-          filter: "none",
-        }}
-      >
+      {perfOK && (
         <div
-          ref={ringRef}
-          className="cursor-ring"
+          className="cursor-overlay"
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: `${ringSize}px`,
-            height: `${ringSize}px`,
-            borderRadius: "50%",
-            border: "2px solid offwhite",
-            background: "transparent",
-            boxShadow: "0 0 6px white",
+            position: "fixed",
+            inset: 0,
+            pointerEvents: "none",
+            zIndex: 10,
+            filter: "none",
           }}
-        />
-      </div>
+        >
+          <div
+            ref={ringRef}
+            className="cursor-ring"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: `${ringSize}px`,
+              height: `${ringSize}px`,
+              borderRadius: "50%",
+              border: "2px solid offwhite",
+              background: "transparent",
+              boxShadow: "0 0 6px white",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 });
