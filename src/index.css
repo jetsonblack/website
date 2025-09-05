@@ -1,0 +1,10 @@
+
+.test-length {
+  min-height: 200vh;
+  width: 100%;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}

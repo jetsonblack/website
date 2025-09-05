@@ -1,0 +1,121 @@
+/* === TODO card === */
+.todo-card{
+  width: min(800px, 92vw);
+  margin: 2rem auto 6rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.todo-title{
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .9;
+}
+
+/* === List === */
+.todo-list{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.todo-list > li{
+  position: relative;
+  padding: .9rem 1rem .9rem 2.5rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: transform .16s ease, box-shadow .16s ease, background .2s ease;
+}
+
+/* left accent bar */
+.todo-list > li::before{
+  content: "";
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0.25));
+  box-shadow: 0 0 18px rgba(255,255,255,0.35);
+}
+
+/* subtle hover lift */
+.todo-list > li:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+  background: rgba(255,255,255,0.07);
+}
+
+/* Links inside items */
+.todo-list a{
+  color: #e8f3ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.todo-list a:hover{ opacity: .9; }
+
+/* Code tags inside items */
+.todo-list code{
+  padding: .1rem .35rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Nested list */
+.todo-list ul{
+  list-style: none;
+  margin: .5rem 0 0 0;
+  padding-left: 1.5rem;
+  display: grid;
+  gap: 6px;
+}
+.todo-list ul li{
+  padding: .5rem .75rem .5rem 1.4rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px dashed rgba(255,255,255,0.18);
+  font-size: .95rem;
+  opacity: .95;
+  position: relative;
+}
+.todo-list ul li::before{
+  content: "—";
+  position: absolute;
+  left: .6rem;
+  opacity: .8;
+}
+
+/* Responsive tweaks */
+@media (max-width: 700px){
+  .todo-card{ padding: 1rem; }
+  .todo-title{ font-size: .95rem; }
+  .todo-list > li{ padding-left: 2.1rem; }
+}
+
+/* Optional state helpers (add these classes in JSX when needed) */
+.todo-done{
+  text-decoration: line-through;
+  opacity: .65;
+}
+.todo-priority{
+  border: 1px solid rgba(255, 255, 255, 0.32) !important;
+  background: rgba(255,255,255,0.09) !important;
+}
+
+/* nicer checkbox look (keeps your theme) */
+.todo-list input[type="checkbox"]{
+  accent-color: #fff;
+}
