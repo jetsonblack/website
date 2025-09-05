@@ -38,6 +38,9 @@ export default function App() {
           rootMargin="-100px"
           textAlign="center"
         />
+        <div className="hero-extra">
+          <h4>🚧 UNDER CONSTRUCTION 🚧</h4>
+        </div>
         <PersistentTodo/>
       </div>
     </div>
