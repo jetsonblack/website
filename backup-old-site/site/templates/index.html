@@ -1,48 +1,56 @@
 <!DOCTYPE html>
-<!-- 
+<html lang="en">
+<!--
 ___________________________________________________________________________
 
-                            copyright © 2024 Jetson Black
-                            x.com/jetsonbb
-                            http://jetsonblack.com/
-
-                            just a simple page for myself!
+                copyright © 2024 Jetson Black
+                
+                twitter.com/jetsonbb
+                instagram.com/jetson.black
+                github.com/jetsonblack
+                
+                http://jetsonblack.com/
+                
+                Flask portfolio with retro vibes!
 ___________________________________________________________________________
 -->
 
 <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="https://i.postimg.cc/8cGBQQ0B/icoin.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="language" content="English" />
-    <meta name="author" content="jetson" />
-    <meta name="title" content="http://http://jetsonblack.com/" />
-    <meta name="keywords" content="jetsonbb, jetsonblack, a348jetson, jetson, a348" />
-    <meta property="og:title" content="asokry.neocities.org" />
-    <meta property="og:description" content="bababooey - @jetsonbb" />
-    <meta property="og:image" content="https://i.postimg.cc/8cGBQQ0B/icoin.png" />
-    <meta property="og:url" content="http://http://jetsonblack.com/" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="jetson" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:creator" content="@jetsonbb" />
-    <meta name="twitter:site" content="@jetsonbb" />
-    <meta name="twitter:title" content="asokry.neocities.org" />
-    <meta name="twitter:description" content="pookie, what - @jetsonbb" />
-    <meta name="twitter:image" content="https://i.postimg.cc/8cGBQQ0B/icoin.png" />
-    <meta name="twitter:url" content="http://http://jetsonblack.com/" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>jetson's website</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Jetson Black - Portfolio</title>
+    <meta name="title" content="Jetson Black - Student, Developer, Designer">
+    <meta name="description"
+        content="IU Student | Computer Science & Web Design | Building cool stuff with code and creativity">
+    <meta name="author" content="Jetson Black">
+    <meta name="language" content="English">
+    <meta name="keywords"
+        content="jetsonbb, jetsonblack, jetson, portfolio, web developer, IU, indiana university, computer science, designer">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jetsonblack.com/">
+    <meta property="og:title" content="Jetson Black - Portfolio">
+    <meta property="og:description" content="IU Student | Computer Science & Web Design | Building cool stuff">
+    <meta property="og:image" content="https://jetsonblack.com/og-image.png">
+    <meta property="og:site_name" content="Jetson Black">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://jetsonblack.com/">
+    <meta name="twitter:title" content="Jetson Black - Portfolio">
+    <meta name="twitter:description" content="IU Student | Computer Science & Web Design | Building cool stuff">
+    <meta name="twitter:image" content="https://jetsonblack.com/og-image.png">
+    <meta name="twitter:creator" content="@jetsonbb">
+    <meta name="twitter:site" content="@jetsonbb">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Courier+Prime:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
     <div class="desktop">
-        <!-- Main Hero Window -->
         <div class="window hero-window" data-window-id="hero">
             <div class="window-titlebar">
                 <span class="window-title">Portfolio</span>
@@ -187,7 +195,8 @@ ___________________________________________________________________________
             <p>🔗 <em>Coming soon</em></p>
 
             <h3>✨ This Website!</h3>
-            <p>Retro portfolio with draggable windows and GitHub-style markdown formatting.</p>
+            <p>First real Flask application - a retro portfolio with draggable windows and GitHub-style markdown
+                formatting.</p>
             <p>🔗 <a href="https://jetsonblack.com" target="_blank">jetsonblack.com</a></p>
         </div>
     </template>
@@ -200,6 +209,7 @@ ___________________________________________________________________________
             <ul>
                 <li>🐦 <a href="https://twitter.com/jetsonbb" target="_blank">Twitter (@jetsonbb)</a></li>
                 <li>📷 <a href="https://instagram.com/jetson.black" target="_blank">Instagram (@jetson.black)</a></li>
+                <li>📱 <em>TikTok - Coming soon!</em></li>
             </ul>
 
             <h2>Professional</h2>
@@ -278,8 +288,9 @@ ___________________________________________________________________________
         style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 12px; font-family: 'Courier Prime', monospace; pointer-events: none; z-index: 1;">
         <small>&copy; <span id="year"></span> Jetson Black.</small>
     </footer>
-    <script src="js/draggable.js"></script>
-    <script src="js/todo.js"></script>
+
+    <script src="{{ url_for('static', filename='js/draggable.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/todo.js') }}"></script>
 
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
